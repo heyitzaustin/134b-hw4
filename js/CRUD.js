@@ -60,7 +60,7 @@ function listHabits(){
                     "<button type=\"button\" class=\"op op-done\" onclick=\"showMsg(this);\" title=\"done\">"+
                         "<img src=\"../img/done.svg\" alt=\"Done\">"+
                     "</button>"+
-                    "<button type=\"button\" class=\"op op-edit\" onclick=\"location.href='edit.html'\" title=\"edit habit\">"+
+                    "<button type=\"button\" class=\"op op-edit\" onclick=\"goToHabit(this);\" title=\"edit habit\">"+
                         "<img src=\"../img/edit.svg\" alt=\"Edit\">"+
                     "</button>"+
                     "<button type=\"button\" class=\"op op-del\" onclick=\"deleteHabit(this);\" title=\"delete habit\">"+
@@ -103,14 +103,31 @@ function removeHabit(key){
 
 }
 
-function updateHabit(){
+function goToHabit(element){
+
+    var child = element.parentNode.parentNode;
+    //var parent = child.parentNode;
+    //parent.removeChild(child);
+
+    //removeHabit(child.id);
+
+    window.localStorage.setItem("habitKey", child.id);
+
+    location.href="edit.html";
+
+    console.log(key);
+}
+
+function updateHabit(pkey, ptitle, pdaily){
+
+    console.log(pkey);
 
     var myFirebaseRef = new Firebase("https://torrid-fire-6209.firebaseio.com");
 
     var habitsRef = myFirebaseRef.child("habits");
 
     // TODO: Insert unique ID of updated habit object here
-    var updateRef = habitsRef.child("");
+    var updateRef = habitsRef.child(pkey);
 
     var onComplete = function(error) {
         if (error) {
@@ -123,7 +140,7 @@ function updateHabit(){
     // TODO: Insert new data here to update the given object
     updateRef.update(
         {
-            title: "",
+            title: ptitle,
             icon: "",
             weeklyfrequency: {
                 sun: "",
@@ -134,8 +151,9 @@ function updateHabit(){
                 fri: "",
                 sat: ""
             },
-            dailyfrequency: ""
+            dailyfrequency: pdaily
         }
         ,onComplete);
 
+    location.href="list.html";
 }
