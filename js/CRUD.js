@@ -106,10 +106,6 @@ function removeHabit(key){
 function goToHabit(element){
 
     var child = element.parentNode.parentNode;
-    //var parent = child.parentNode;
-    //parent.removeChild(child);
-
-    //removeHabit(child.id);
 
     window.localStorage.setItem("habitKey", child.id);
 
@@ -118,15 +114,26 @@ function goToHabit(element){
     console.log(key);
 }
 
-function updateHabit(pkey, ptitle, pdaily){
-
+function updateHabit(){
+    var pkey = window.localStorage.getItem("habitKey");
     console.log(pkey);
 
+    var ptitle = document.getElementById("title-top").value;
+    
+    var pdaily;
+    for(var i=1; i<=3; i++) {
+        if(document.getElementById("day" + i).checked == true){
+            pdaily = i;
+        }
+    }
+
+    var pweekly = [];
+    for(var i=0; i<7; i++) {
+        pweekly[i] = document.getElementById("date" + i).checked;
+    }
+
     var myFirebaseRef = new Firebase("https://torrid-fire-6209.firebaseio.com");
-
     var habitsRef = myFirebaseRef.child("habits");
-
-    // TODO: Insert unique ID of updated habit object here
     var updateRef = habitsRef.child(pkey);
 
     var onComplete = function(error) {
@@ -137,19 +144,18 @@ function updateHabit(pkey, ptitle, pdaily){
         }
     };
 
-    // TODO: Insert new data here to update the given object
     updateRef.update(
         {
             title: ptitle,
             icon: "",
             weeklyfrequency: {
-                sun: "",
-                mon: "",
-                tues: "",
-                wed: "",
-                thurs: "",
-                fri: "",
-                sat: ""
+                sun: pweekly[0],
+                mon: pweekly[1],
+                tues: pweekly[2],
+                wed: pweekly[3],
+                thurs: pweekly[4],
+                fri: pweekly[5],
+                sat: pweekly[6]
             },
             dailyfrequency: pdaily
         }

@@ -11,16 +11,30 @@
 			function onStart() {
             	document.getElementById("icon3").style.border="5px solid #42A5F5";
 
-            	var currentKey = window.localStorage.getItem("habitKey");
+            	var key = window.localStorage.getItem("habitKey");
 
             	var myFirebaseRef = new Firebase("https://torrid-fire-6209.firebaseio.com");
     			var habitsRef = myFirebaseRef.child("habits");
-    			var current = habitsRef.child(currentKey);
-    			current.once("value", function(snapshot) {
+
+    			var valueRef = habitsRef.child(key);
+    			valueRef.once("value", function(snapshot) {
   					var title = snapshot.child("title").val();
   					var daily = snapshot.child("dailyfrequency").val();
     				document.getElementById("title-top").value=title;
-    				selectCheckbox("check" + daily);
+    				selectDay("day" + daily);
+    			});
+
+    			var weeklyRef = valueRef.child("weeklyfrequency");
+    			weeklyRef.once("value", function(snapshot) {
+  					var weekly = [];
+  					weekly[0] = snapshot.child("sun").val();
+  					weekly[1] = snapshot.child("mon").val();
+  					weekly[2] = snapshot.child("tues").val();
+  					weekly[3] = snapshot.child("wed").val();
+  					weekly[4] = snapshot.child("thurs").val();
+  					weekly[5] = snapshot.child("fri").val();
+  					weekly[6] = snapshot.child("sat").val();
+  					loadDate(weekly);
     			});
 			}
 			window.onload = onStart;
@@ -37,25 +51,25 @@
 				<img class="icon" src="../img/add.png" alt="find a image"/>
 				<p><label>Weekly Frequency</label></p>
 				<div id="ck-button">
-					<label> <input type="checkbox" name="date" value="sunday" checked><span>Sun</span></label>
-					<label> <input type="checkbox" name="date" value="monday"><span>Mon</span></label>
-					<label> <input type="checkbox" name="date" value="tuesday" checked><span>Tues</span></label>
-					<label> <input type="checkbox" name="date" value="wednesday"><span>Wed</span></label>
-					<label> <input type="checkbox" name="date" value="thursday" checked><span>Thur</span></label>
-					<label> <input type="checkbox" name="date" value="friday"><span>Fri</span></label>
-					<label> <input type="checkbox" name="date" value="saturday"><span>Sat</span></label>
+					<label> <input type="checkbox" id="date0" name="date" value="sunday"><span>Sun</span></label>
+					<label> <input type="checkbox" id="date1" name="date" value="monday"><span>Mon</span></label>
+					<label> <input type="checkbox" id="date2" name="date" value="tuesday"><span>Tues</span></label>
+					<label> <input type="checkbox" id="date3" name="date" value="wednesday"><span>Wed</span></label>
+					<label> <input type="checkbox" id="date4" name="date" value="thursday"><span>Thur</span></label>
+					<label> <input type="checkbox" id="date5" name="date" value="friday"><span>Fri</span></label>
+					<label> <input type="checkbox" id="date6" name="date" value="saturday"><span>Sat</span></label>
 				</div>
 		
 		
 				<p><label>Daily Frequency</label></p>
 				<div id="daily-button">
-					<label> <input type="checkbox" id="check1" name="day" value="one" onclick="selectCheckbox(this.id)"><span>1</span></label>
-					<label> <input type="checkbox" id="check2" name="day" value="two" onclick="selectCheckbox(this.id)"><span>2</span></label>
-					<label> <input type="checkbox" id="check3" name="day" value="three" onclick="selectCheckbox(this.id)"><span>3</span></label>
+					<label> <input type="checkbox" id="day1" name="day" value="one" onclick="selectDay(this.id)"><span>1</span></label>
+					<label> <input type="checkbox" id="day2" name="day" value="two" onclick="selectDay(this.id)"><span>2</span></label>
+					<label> <input type="checkbox" id="day3" name="day" value="three" onclick="selectDay(this.id)"><span>3</span></label>
 					<span id="times">times</span>
 				</div>
 				<p><label><span id="others_text">Others: </span><input id="others" type="text" name="day" placeholder="More than 3 times"></label></p>
-				<p id="save_p"><input id="save" type="button" value="Save It" onclick="storeVars();"></p>
+				<p id="save_p"><input id="save" type="button" value="Save It" onclick="updateHabit();"></p>
 				
 			</form>
 
@@ -70,27 +84,32 @@
 				image.style.border = "5px solid #42A5F5";
 			}
 
-			function selectCheckbox(id) {
+			function selectDay(id) {
     			for (var i=1; i<=3; i++) {
-        			document.getElementById("check" + i).checked = false;
+        			document.getElementById("day" + i).checked = false;
     			}
     			document.getElementById(id).checked = true;
 			}
 
-			function storeVars() {
-				var key = window.localStorage.getItem("habitKey");
-
-				var title = document.getElementById("title-top").value;
-				
-				var daily;
-				for(var i=1; i<=3; i++) {
-					if(document.getElementById("check" + i).checked == true){
-						daily = i;
-					}
+			function loadDate(array) {
+				for (var i=0; i<7; i++) {
+					document.getElementById("date" + i).checked = array[i];
 				}
-
-				updateHabit(key, title, daily);
 			}
+
+			function toggleCheck(element) {
+				//element.checked = !element.checked;
+				//document.getElementById(id).checked = !document.getElementById(id).checked;
+				//alert(document.getElementById(id).checked);
+				//document.getElementById(id).checked = document.getElementById(id).checked ? false : true;
+				if(element.checked){
+					element.checked = false;
+				}
+				else{
+					element.checked = true;
+				}
+			}
+			
 		</script>
 		<script src="../js/CRUD.js"></script>
 		<script src="../js/firebase.js"></script>
