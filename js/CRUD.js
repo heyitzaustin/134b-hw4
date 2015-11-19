@@ -29,6 +29,7 @@ function addHabit(image, day_freq){
     console.log(week_freq);
     console.log(day_freq);
 
+
     //redirectTo('list.html');
 
 }
@@ -79,8 +80,9 @@ function listHabits(){
 
     // TODO: retrieve habits and list them
 
+    var element = document.getElementById("habit-list");
 
-    habitsRef.on("value", function(snapshot) {
+    habitsRef.once("value", function(snapshot) {
         snapshot.forEach(function(childSnapshot){
             console.log(childSnapshot.val());
             var newLi = document.createElement('li');
