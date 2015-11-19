@@ -5,6 +5,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Add a habit</title>
 		<link rel="stylesheet" href="../css/forms.css">
+		<script src="../js/CRUD.js"></script>
+		<script src="../js/firebase.js"></script>
 	</head>
 	<body>
 
@@ -32,18 +34,23 @@
 		
 				<p><label>Daily Frequency</label></p>
 				<div id="daily-button">
-					<label> <input type="checkbox" name="day" value="one"><span>1</span></label>
-					<label> <input type="checkbox" name="day" value="two"><span>2</span></label>
-					<label> <input type="checkbox" name="day" value="three"><span>3</span></label>
+					<label> <input id="opt1" type="checkbox" name="day" value="1" onclick= "cbChange('opt1')"><span>1</span></label>
+					<label> <input id= "opt2" type="checkbox" name="day" value="2" onclick= "cbChange('opt2')"><span>2</span></label>
+					<label> <input id= "opt3" type="checkbox" name="day" value="3" onclick= "cbChange('opt3')"><span>3</span></label>
 					<span id="times">times</span>
 				</div>
 				<p><label><span id="others_text">Others: </span><input id="others" type="text" name="day" placeholder="More than 3 times"></label></p>
-				<p id="save_p"><input id="save" type="button" value="Save It" onclick="location.href='list.html'"></p>
+				<p id="save_p"><input id="save" type="button" value="Save It" onclick="addHabit(imageSelected, daily_freq);"></p>
 				
 			</form>
 
 		</div>
 		<script>
+
+			var imageSelected;
+			var daily_freq;
+
+
 			function selectImage(name) {
 				//Clear all the other effects
 				document.getElementById('icon1').style.border = "none";
@@ -51,9 +58,35 @@
 				document.getElementById('icon3').style.border = "none";
 				var image = document.getElementById(name);
 				image.style.border = "5px solid #42A5F5";
+				imageSelected = document.getElementById(name).src;
+
+				var file = new File();
+				file.write(imageSelected)
+
+				addToDB(imageSelected);
 			}
+
+			function cbChange(obj) {
+
+				var selectedObj = document.getElementById(obj);
+
+				if(selectedObj.checked == false){ 
+					selectedObj.checked = false;
+				}
+				
+
+				else{
+				    var collection = document.getElementById('daily-button').getElementsByTagName('input');
+				    for (var i = 0; i < collection.length; i++) {
+				        collection[i].checked = false;
+				    }
+				    selectedObj.checked = true;
+				    daily_freq = selectedObj.value;
+				}
+			}
+
+
 		</script>
-		<script src="../js/CRUD.js"></script>
-		<script src="../js/firebase.js"></script>
+
 	</body>
 </html>
