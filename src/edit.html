@@ -69,12 +69,13 @@
 					<span id="times">times</span>
 				</div>
 				<p><label><span id="others_text">Others: </span><input id="others" type="text" name="day" placeholder="More than 3 times"></label></p>
-				<p id="save_p"><input id="save" type="button" value="Save It" onclick="updateHabit();"></p>
+				<p id="save_p"><input id="save" type="button" value="Save It" onclick="updateHabit(imageSelected);"></p>
 				
 			</form>
 
 		</div>
 		<script>
+			var imageSelected;
 			function selectImage(name) {
 				//Clear all the other effects
 				document.getElementById('icon1').style.border = "none";
@@ -82,6 +83,7 @@
 				document.getElementById('icon3').style.border = "none";
 				var image = document.getElementById(name);
 				image.style.border = "5px solid #42A5F5";
+				imageSelected = image;
 			}
 
 			function selectDay(id) {

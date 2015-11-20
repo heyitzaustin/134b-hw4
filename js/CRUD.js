@@ -27,37 +27,29 @@ function addHabit(image, day_freq){
     };
 
     if(title == ""){
-        var alert = document.getElementById('alert').innerHTML = '** Please provide a title **';
+        document.getElementById('alert').innerHTML = '** Please provide a title **';
     }
     // TODO: Fill with habit values to add to firebase
 
     else if( week_freq.length == 0){
-        var alert = document.getElementById('alert').innerHTML = '** Please provide a weekly frequency **';
+        document.getElementById('alert').innerHTML = '** Please provide a weekly frequency **';
     }
 
     else if( day_freq == null ){
-        var alert = document.getElementById('alert').innerHTML = '** Please provide a daily frequency **';
+        document.getElementById('alert').innerHTML = '** Please provide a daily frequency **';
     }
     else{
         newHabitRef.set({
             title: title,
             icon: img,
             weeklyfrequency: week_freq,
-            dailyfrequency: day_freq
+            dailyfrequency: day_freq,
+            progress: 0
         },onComplete);
     }
 }
 
-function addToDB(image){
-    var myFirebaseRef = new Firebase("https://torrid-fire-6209.firebaseio.com/");
 
-    var habitsRef = myFirebaseRef.child("images");
-}
-
-
-function redirectTo(address){
-    window.location.replace(address);
-}
 
 function getTitle(){
     return document.getElementById('title').value;
@@ -101,6 +93,9 @@ function listHabits(){
             console.log(childSnapshot.val());
             var newLi = document.createElement('li');
             newLi.id = childSnapshot.key();
+            var progress = childSnapshot.val().progress;
+            var goal = childSnapshot.val().dailyfrequency;
+            var ratio = (progress / goal) * 200;
             newLi.innerHTML = "<ul class=\"habit-info\">" +
                 "<li><div class=\"habit-name\">"+childSnapshot.val().title+"</div></li>" +
                 "<li><img class=\"habit-icon\" src=\""+childSnapshot.val().icon+"\" alt=\"habit icon\"></li> " +
@@ -109,14 +104,14 @@ function listHabits(){
                 "<span class=\"message-total\"> " +
                 "<strong>2</strong> days in a row! Best Record: <strong>5</strong><br> " +
                 "<svg height=\"25\" width=\"200\">"+
-                    "<line x1=\"0\" y1=\"0\" x2=\"100\" y2=\"0\" style=\"stroke:rgba(65, 131, 215, 0.8);stroke-width:25\" />"+
-                    "<line x1=\"100\" y1=\"0\" x2=\"200\" y2=\"0\" style=\"stroke:rgba(171,171,171,0.6);stroke-width:25\" />"+
+                    "<line class=\"line1 \" x1=\"0\" y1=\"0\" x2=\""+ratio+"\" y2=\"0\" style=\"stroke:rgba(65, 131, 215, 0.8);stroke-width:25\" />"+
+                    "<line class=\"line2 \" x1=\""+ratio+"\" y1=\"0\" x2=\"200\" y2=\"0\" style=\"stroke:rgba(171,171,171,0.6);stroke-width:25\" />"+
                 "</svg>"+
                 "</span><br> " +
                 "<span class=\"message-today\">Completed <strong>1/1</strong> for today!</span>" +
                 "</div>"+
                 "<div class=\"habit-op\">"+
-                    "<button type=\"button\" class=\"op op-done\" onclick=\"showMsg(this);\" title=\"done\">"+
+                    "<button type=\"button\" class=\"op op-done\" onclick=\"updateProgress(this);\" title=\"done\">"+
                         "<img src=\"../img/done.svg\" alt=\"Done\">"+
                     "</button>"+
                     "<button type=\"button\" class=\"op op-edit\" onclick=\"goToHabit(this);\" title=\"edit habit\">"+
@@ -138,6 +133,62 @@ function listHabits(){
 
 
 
+}
+
+function updateProgress(element){
+var child = element.parentNode.parentNode;
+var myFirebaseRef = new Firebase("https://torrid-fire-6209.firebaseio.com");
+var habitsRef = myFirebaseRef.child("habits");
+    habitsRef.once("value", function(snapshot) {
+        snapshot.forEach(function(childSnapshot){
+                    var msgElement = (element.parentNode.parentNode.getElementsByClassName("message-today"))[0];
+                    var progress = (childSnapshot.val().progress) + 1;
+                    var goal = childSnapshot.val().dailyfrequency;
+                    var ratio = (progress/goal) *200;
+                    
+                    console.log(goal);
+                    console.log(progress);
+                     if (progress <= goal){
+
+                            var line1 = element.parentNode.parentNode.getElementsByClassName("line1")[0];
+                            line1.setAttribute("x2", ratio);
+                            var line2 = element.parentNode.parentNode.getElementsByClassName("line2")[0];
+                            line2.setAttribute("x1", ratio);
+
+
+                            
+                            msgElement.innerHTML = "Completed <strong>"+progress+"/"+goal+"</strong> for today!";
+                            msgElement.style.visibility="visible";
+
+                            var onComplete = function(error) {
+                                if (error) {
+                                    console.log('Synchronization failed');
+                                } else {
+                                    console.log('Synchronization succeeded');
+                                }
+                            };
+
+    
+                           
+                            
+
+                            var updateRef = habitsRef.child(child.id);
+
+                            updateRef.update(
+                                {
+                                    progress: progress
+                                },onComplete);
+                        }
+
+                    else{
+                        msgElement.innerHTML = "Completed for today!";
+                        msgElement.style.visibility="visible";
+                    }
+
+                    });
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
 }
 
 function removeHabit(key){
@@ -173,11 +224,13 @@ function goToHabit(element){
     console.log(key);
 }
 
-function updateHabit(){
+function updateHabit(image){
     var pkey = window.localStorage.getItem("habitKey");
     console.log(pkey);
 
     var ptitle = document.getElementById("title-top").value;
+
+    var img = getBase64Image(image);
     
     var pdaily;
     for(var i=1; i<=3; i++) {
@@ -206,7 +259,7 @@ function updateHabit(){
     updateRef.update(
         {
             title: ptitle,
-            icon: "",
+            icon: img,
             weeklyfrequency: {
                 sun: pweekly[0],
                 mon: pweekly[1],
