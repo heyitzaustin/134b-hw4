@@ -51,6 +51,13 @@ b) we implemented a couple UI focused Javascript functions, in order to give our
    		   When the user logs a habit, we have a progress bar that automatically increases and indicates the progress the user
    		   has accomplished for that habit.  
 
+c) we attempted to implement a notification system through Roost to remind the user to record and complete his/her habits. The
+user would receive push reminders whenever a habit was scheduled for that day at a time that the user would specify. Unfortunately,
+these notifications proved fairly difficult to implement with vanilla Javascript and without a server to push the notifications
+to the user's screen. We attempted to use the Roost free trial server to send the notifications but without a PHP compatible
+server, we were unable to send the request in the required format. It should also be noted that Roost is not completely compatible
+with Chrome or FireFox and there aren't many other services that would allow for web notifications when the browser is not open.
+
 
 Working Functionalities:
 	* Able to validate a log-in or prompt user to sign-up if email does not exist on data base
@@ -95,5 +102,8 @@ Austin Li:
     3) List and delete in CRU
 
 Anthony Johnson:
+	1) Edit habit function
+	2) Date display intended for notifications and list display
+	3) Beginning notification logic (Roost)
 		
 

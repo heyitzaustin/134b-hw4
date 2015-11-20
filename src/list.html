@@ -9,8 +9,103 @@
     <script src="../js/firebase.js"></script>
 </head>
 <body>
+<script>
+        function httpPostAsync(theUrl, callback)
+        {
+            var sendData = "-u \"6flw2mcph0uwb1uka60wmsmier2m6di7:opyhgwfqe2q44cfgnvh5zs1q9zrd7fhl\" \\ -H \"Content-Type: application/json\" \\";
+                //--data \'\{\"alert\":\"A Notification Title\", \"url\":\"http:\/\/google.com\"\}\' \\";
+            var jsonData = "{\"alert\":\"A Notification Title\", \"url\":\"http:\/\/google.com\"\}";
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() { 
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    callback(xmlHttp.responseText);
+            }
+            xmlHttp.open("POST", theUrl, true); // true for asynchronous 
+            xmlHttp.send(jsonData);
+        }
+
+        function sendPHP(){
+            $c = curl_init();
+            curl_setopt($c, CURLOPT_URL, "https://go.goroost.com/api/push");
+            curl_setopt($c, CURLOPT_POST, true);
+            curl_setopt($c, CURLOPT_USERPWD, "6flw2mcph0uwb1uka60wmsmier2m6di7:opyhgwfqe2q44cfgnvh5zs1q9zrd7fhl");
+            curl_setopt($c, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            curl_setopt($c, CURLOPT_POSTFIELDS,
+                '{"alert":"New Notification","url":"http:\/\/google.com"}');
+            curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+               
+            $r = curl_exec($c); //call and get results json
+            curl_close($c);
+        }
+
+        /**
+        * Make a post petition without ajax and without refresh the page
+        * Invisible for the user
+        **/
+        function postWithoutAjax( url, params ){
+            
+            params = params || {};
+
+            // function to remove the iframe
+            var removeIframe = function( iframe ){
+                iframe.parentElement.removeChild(iframe);
+            };
+            
+            // make a iframe...
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            
+            iframe.onload = function(){
+                document = this.contentWindow.document;
+                
+                // Make a invisible form
+                var form = document.createElement('form');
+                form.method = 'get';
+                form.action = url;
+                document.body.appendChild(form);
+                
+                // pass the parameters
+                for( var name in params ){
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = name;
+                    input.value = params[name];
+                    form.appendChild(input);
+                }
+                
+                form.submit();
+                // remove the iframe
+                removeIframe(iframe);
+            };
+            
+            document.body.appendChild(iframe);
+        }
+
+        function onStart() {
+            var today = displayDate();
+            document.getElementById("display-date").innerHTML=today;
+
+            var _roost = _roost || [];
+            _roost.push(['onresult', function(data) {
+                if (data.firstTime) {
+                    alert("Thank you for registering!");
+                }
+            }]);
+
+            //postWithoutAjax("https://go.goroost.com/api/push", {"alert":"New Notification","url":"http:\/\/google.com"});
+
+            //sendPHP();
+
+            //var roostResponse = httpPostAsync("https://api.goroost.com/api/push", function(data){alert("Callback:" + data)});
+            //alert("Response" + roostResponse);
+        }
+        window.onload = onStart;
+
+    </script>
     <section>
         <h1>Habit List</h1>
+        <h3 id="display-date"></h3>
         <ul id="habit-list">
             <script>listHabits();</script>
         </ul>
