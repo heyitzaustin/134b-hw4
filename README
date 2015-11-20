@@ -1,0 +1,41 @@
+******************************************************************************
+
+DISCLAIMER:
+
+Although our application may not be fully polished as stated by the requirements,
+it is not without good reason. We (CalTrackers) originally had a group of 5 people,
+and in the initial stage of the assignment we distributed the work out. Three of
+us worked on our parts in the beginning, doing what we can while the other two
+put the rest of our team on a communication black out (didn't hear anything from
+them for two weeks or so). It turned out that the two of them dropped the class
+without letting the rest of us know, meaning we had 40% of the work left in addition
+to all the work we still had left, to do in just the last week. This lack of time
+for such a huge amount of work ultimately resulted in lack of polish in some aspects
+of the application, such as interactive polish and a real time solution.
+
+
+Now, onto the actual writeup
+
+******************************************************************************
+
+
+
+
+The Purpose of this assignment is to use Javascript to turn a series of HTML
+and CSS template mockups to a polished web application. Our responsibilities
+were to:
+
+a) Implement CRUD functions (Create Read Update Delete)
+
+b) Have UI focused Javascript
+
+c) Have a notification solution for the end user from the application
+
+For a), we implemented all of the CRUD functions using Firebase, a JavaScript
+framework that handles the majority of our backend functionality including
+authorization and the database. in the CRUD.js file is a series of javascript
+functions called by the HTML that handles all the logic for creating new habits,
+listing them, editing them, and deleting them in our database securely.
+
+
+
