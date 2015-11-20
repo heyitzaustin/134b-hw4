@@ -259,7 +259,7 @@ function updateHabit(image){
     }
 
     var other = document.getElementById("others").value;
-    if( other != ""){
+    if(  other != ""){
         pdaily = other; 
     }
 
