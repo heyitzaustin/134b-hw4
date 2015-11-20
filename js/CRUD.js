@@ -8,6 +8,10 @@ function addHabit(image, day_freq){
     var img = getBase64Image(image);
     var week_freq = getWeekFreq();
 
+    var pweekly = [];
+    for(var i=0; i<7; i++) {
+        pweekly[i] = document.getElementById("date" + i).checked;
+    }
 
     var other = document.getElementById('others');
     if(other.value != ""){
@@ -49,7 +53,15 @@ function addHabit(image, day_freq){
         newHabitRef.set({
             title: title,
             icon: img,
-            weeklyfrequency: week_freq,
+            weeklyfrequency: {
+                sun: pweekly[0],
+                mon: pweekly[1],
+                tues: pweekly[2],
+                wed: pweekly[3],
+                thurs: pweekly[4],
+                fri: pweekly[5],
+                sat: pweekly[6]
+            },
             dailyfrequency: day_freq,
             progress: 0
         },onComplete);
@@ -244,6 +256,11 @@ function updateHabit(image){
         if(document.getElementById("day" + i).checked == true){
             pdaily = i;
         }
+    }
+
+    var other = document.getElementById("others").value;
+    if( other != ""){
+        pdaily = other; 
     }
 
     var pweekly = [];

@@ -21,7 +21,12 @@
   					var title = snapshot.child("title").val();
   					var daily = snapshot.child("dailyfrequency").val();
     				document.getElementById("title-top").value=title;
-    				selectDay("day" + daily);
+    				if(daily <= 3){
+    					selectDay("day" + daily);
+    				}
+    				else{
+    					document.getElementById("others").value = daily;
+    				}
     			});
 
     			var weeklyRef = valueRef.child("weeklyfrequency");
@@ -90,7 +95,11 @@
     			for (var i=1; i<=3; i++) {
         			document.getElementById("day" + i).checked = false;
     			}
-    			document.getElementById(id).checked = true;
+    			var day = document.getElementById(id);
+    			if( day != null){
+    				document.getElementById(id).checked = true;
+    			}
+
 			}
 
 			function loadDate(array) {
