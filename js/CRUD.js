@@ -12,13 +12,21 @@ function addHabit(image, day_freq){
     var habitsRef = myFirebaseRef.child("habits");
     var newHabitRef = habitsRef.push();
 
+    var onComplete = function(error) {
+        if (error) {
+            console.log('Synchronization failed');
+        } else {
+            console.log('Synchronization succeeded');
+        }
+    };
+
     // TODO: Fill with habit values to add to firebase
     newHabitRef.set({
         title: title,
         icon: image,
         weeklyfrequency: week_freq,
         dailyfrequency: day_freq
-    });
+    },onComplete);
 
     
 
