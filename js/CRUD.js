@@ -7,6 +7,13 @@ function addHabit(image, day_freq){
     var title = getTitle();
     var img = getBase64Image(image);
     var week_freq = getWeekFreq();
+
+
+    var other = document.getElementById('others');
+    if(other.value != ""){
+        day_freq = other.value;
+    }
+    console.log(day_freq);
     
 
     var myFirebaseRef = new Firebase("https://torrid-fire-6209.firebaseio.com/");
