@@ -4,42 +4,48 @@
 
 function addHabit(image, day_freq){
 
-    var title = getTitle();;
+    var title = getTitle();
+    var img = getBase64Image(image);
     var week_freq = getWeekFreq();
+    
 
     var myFirebaseRef = new Firebase("https://torrid-fire-6209.firebaseio.com/");
 
     var habitsRef = myFirebaseRef.child("habits");
     var newHabitRef = habitsRef.push();
 
+
     var onComplete = function(error) {
         if (error) {
             console.log('Synchronization failed');
+            document.getElementById('alert').innerHTML = '** error saving habit please try again **';
+
         } else {
             console.log('Synchronization succeeded');
+            location.href="list.html";
         }
     };
 
+    if(title == ""){
+        var alert = document.getElementById('alert').innerHTML = '** Please provide a title **';
+    }
     // TODO: Fill with habit values to add to firebase
-    newHabitRef.set({
-        title: title,
-        icon: image,
-        weeklyfrequency: week_freq,
-        dailyfrequency: day_freq
-    },onComplete);
 
-    
+    else if( week_freq.length == 0){
+        var alert = document.getElementById('alert').innerHTML = '** Please provide a weekly frequency **';
+    }
 
-
-
-    console.log(title);
-    console.log(image);
-    console.log(week_freq);
-    console.log(day_freq);
-
-
-    //redirectTo('list.html');
-
+    else if( day_freq == null ){
+        var alert = document.getElementById('alert').innerHTML = '** Please provide a daily frequency **';
+    }
+    else{
+        newHabitRef.set({
+            title: title,
+            icon: img,
+            weeklyfrequency: week_freq,
+            dailyfrequency: day_freq
+        },onComplete);
+    }
 }
 
 function addToDB(image){
@@ -97,7 +103,7 @@ function listHabits(){
             newLi.id = childSnapshot.key();
             newLi.innerHTML = "<ul class=\"habit-info\">" +
                 "<li><div class=\"habit-name\">"+childSnapshot.val().title+"</div></li>" +
-                "<li><img class=\"habit-icon\" src=\"../img/"+childSnapshot.val().icon+"\" alt=\"habit icon\"></li> " +
+                "<li><img class=\"habit-icon\" src=\""+childSnapshot.val().icon+"\" alt=\"habit icon\"></li> " +
                 "</ul> " +
                 "<div class=\"message\"> " +
                 "<span class=\"message-total\"> " +
@@ -216,3 +222,22 @@ function updateHabit(){
 
     location.href="list.html";
 }
+
+
+function getBase64Image(img) {
+
+  if(img == null){
+    var alert = document.getElementById('alert').innerHTML = '** Please select an icon **';
+  }  
+  else{
+      var canvas = document.createElement("canvas");
+      canvas.width = img.clientWidth;
+      canvas.height = img.clientHeight;
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0,img.clientWidth, img.clientHeight);
+      var dataURL = canvas.toDataURL("image/png");
+      return dataURL;
+    }
+}
+
+
