@@ -7,6 +7,7 @@ function onClickSignUp() {
 }, function(error, userData) {
   if (error) {
     console.log("Error creating user:", error);
+    sendRollbarError("Error creating user:");
     var signUpFailed = document.getElementById("signInFailed");
     signUpFailed.style.display = "block";
   } else {
