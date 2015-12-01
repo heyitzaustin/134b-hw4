@@ -24,6 +24,7 @@
     <!-- end Rollbar -->
     <script src="../js/CRUD.js"></script>
     <script src="../js/firebase.js"></script>
+    <script src="../socket.io/socket.io.js"></script>
     <!-- start Mixpanel -->
     <script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(" ");
         for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===e.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f)}})(document,window.mixpanel||[]);
@@ -32,96 +33,20 @@
     <!-- end Mixpanel -->
 </head>
 <body>
-<script>
-        function httpPostAsync(theUrl, callback)
-        {
-            var sendData = "-u \"6flw2mcph0uwb1uka60wmsmier2m6di7:opyhgwfqe2q44cfgnvh5zs1q9zrd7fhl\" \\ -H \"Content-Type: application/json\" \\";
-                //--data \'\{\"alert\":\"A Notification Title\", \"url\":\"http:\/\/google.com\"\}\' \\";
-            var jsonData = "{\"alert\":\"A Notification Title\", \"url\":\"http:\/\/google.com\"\}";
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.onreadystatechange = function() { 
-                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                    callback(xmlHttp.responseText);
-            }
-            xmlHttp.open("POST", theUrl, true); // true for asynchronous 
-            xmlHttp.send(jsonData);
-        }
-
-        function sendPHP(){
-            $c = curl_init();
-            curl_setopt($c, CURLOPT_URL, "https://go.goroost.com/api/push");
-            curl_setopt($c, CURLOPT_POST, true);
-            curl_setopt($c, CURLOPT_USERPWD, "6flw2mcph0uwb1uka60wmsmier2m6di7:opyhgwfqe2q44cfgnvh5zs1q9zrd7fhl");
-            curl_setopt($c, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-            curl_setopt($c, CURLOPT_POSTFIELDS,
-                '{"alert":"New Notification","url":"http:\/\/google.com"}');
-            curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-               
-            $r = curl_exec($c); //call and get results json
-            curl_close($c);
-        }
-
-        /**
-        * Make a post petition without ajax and without refresh the page
-        * Invisible for the user
-        **/
-        function postWithoutAjax( url, params ){
-            
-            params = params || {};
-
-            // function to remove the iframe
-            var removeIframe = function( iframe ){
-                iframe.parentElement.removeChild(iframe);
-            };
-            
-            // make a iframe...
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            
-            iframe.onload = function(){
-                document = this.contentWindow.document;
-                
-                // Make a invisible form
-                var form = document.createElement('form');
-                form.method = 'get';
-                form.action = url;
-                document.body.appendChild(form);
-                
-                // pass the parameters
-                for( var name in params ){
-                    var input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = name;
-                    input.value = params[name];
-                    form.appendChild(input);
-                }
-                
-                form.submit();
-                // remove the iframe
-                removeIframe(iframe);
-            };
-            
-            document.body.appendChild(iframe);
-        }
-
+    <script>
         function onStart() {
-            var today = displayDate();
+            var date = displayDate();
+            var today = date[0]+", "+date[1]+" "+date[2]+", "+date[3];
             document.getElementById("display-date").innerHTML=today;
 
-            var _roost = _roost || [];
-            _roost.push(['onresult', function(data) {
-                if (data.firstTime) {
-                    alert("Thank you for registering!");
-                }
-            }]);
+            var socket = io('http://localhost');
+            socket.on('list', function (data) {
+                //console.log(data);
+                reminder(date[0]);
+                //socket.emit('my other event', { my: 'data' });
+            });
 
-            //postWithoutAjax("https://go.goroost.com/api/push", {"alert":"New Notification","url":"http:\/\/google.com"});
-
-            //sendPHP();
-
-            //var roostResponse = httpPostAsync("https://api.goroost.com/api/push", function(data){alert("Callback:" + data)});
-            //alert("Response" + roostResponse);
+            //reminder(date[0]);
         }
         window.onload = onStart;
 
@@ -148,6 +73,79 @@
 
             removeHabit(child.id);
 
+        }
+
+        function displayDate() {
+            var now = new Date();
+            var days = new Array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
+            var months = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
+            var date = ((now.getDate()<10) ? "0" : "")+ now.getDate();
+            function fourdigits(number) {
+                return (number < 1000) ? number + 1900 : number;
+            }
+            today = new Array(days[now.getDay()],
+                     months[now.getMonth()],
+                     date,
+                     fourdigits(now.getYear()));
+            return today;
+        }
+
+        function reminder(day) {
+            var myFirebaseRef = new Firebase("https://torrid-fire-6209.firebaseio.com");
+            var habitsRef = myFirebaseRef.child("habits");
+            
+            habitsRef.once("value", function(snapshot) {
+                snapshot.forEach(function(childSnapshot){
+                    var progress = childSnapshot.val().progress;
+                    var goal = childSnapshot.val().dailyfrequency;
+                    var days = childSnapshot.val().weeklyfrequency;
+                    
+                    if (days[day] && progress < goal){
+                        console.log(childSnapshot.val());
+                        notifyMe(childSnapshot.val());
+                    }
+                });
+            });
+        }
+
+        function notifyMe(habit) {
+            //var noti = new Notification(habit.title);
+            //console.log(noti);
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notification");
+            }
+            else if (Notification.permission === "granted") {
+                var options = {
+                    body: "Don't forget to complete your habits for today!",
+                    icon: "",
+                    dir : "ltr"
+                };
+                var notification = new Notification(habit.title, options);
+                notification.requireInteraction;
+                alert("granted");
+                //notification.onclick(highlight(habit));
+            }
+            else if (Notification.permission !== 'denied') {
+                alert("denied");
+                Notification.requestPermission(function (permission) {
+                    alert(permission);
+                    if (!('permission' in Notification)) {
+                        Notification.permission = permission;
+                    }
+
+                    if (permission === "granted") {
+                        var options = {
+                            body: "Don't forget to complete your habits for today!",
+                            icon: "",
+                            dir : "ltr"
+                        };
+                        var notification = new Notification(habit.title, options);
+                        notification.requireInteraction;
+                        alert("accepted");
+                        //notification.onclick(highlight(habit));
+                    }
+                });
+            }
         }
     </script>
 </body>

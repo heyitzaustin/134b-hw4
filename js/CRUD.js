@@ -5,7 +5,7 @@
 function addHabit(image, day_freq){
 
     var title = getTitle();
-    var img = getBase64Image(image);
+    //var img = getBase64Image(image);
     var week_freq = getWeekFreq();
 
     var pweekly = [];
@@ -35,15 +35,15 @@ function addHabit(image, day_freq){
             console.log('Synchronization succeeded');
             mixpanel.track("Habit Added", {
                 title: title,
-                icon: img,
+                //icon: img,
                 weeklyfrequency: {
-                    sun: pweekly[0],
-                    mon: pweekly[1],
-                    tues: pweekly[2],
-                    wed: pweekly[3],
-                    thurs: pweekly[4],
-                    fri: pweekly[5],
-                    sat: pweekly[6]
+                    Sunday: pweekly[0],
+                    Monday: pweekly[1],
+                    Tuesday: pweekly[2],
+                    Wednesday: pweekly[3],
+                    Thursday: pweekly[4],
+                    Friday: pweekly[5],
+                    Saturday: pweekly[6]
                 },
                 dailyfrequency: day_freq,
                 progress: 0
@@ -67,15 +67,15 @@ function addHabit(image, day_freq){
     else{
         newHabitRef.set({
             title: title,
-            icon: img,
+            //icon: img,
             weeklyfrequency: {
-                sun: pweekly[0],
-                mon: pweekly[1],
-                tues: pweekly[2],
-                wed: pweekly[3],
-                thurs: pweekly[4],
-                fri: pweekly[5],
-                sat: pweekly[6]
+                Sunday: pweekly[0],
+                Monday: pweekly[1],
+                Tuesday: pweekly[2],
+                Wednesday: pweekly[3],
+                Thursday: pweekly[4],
+                Friday: pweekly[5],
+                Saturday: pweekly[6]
             },
             dailyfrequency: day_freq,
             progress: 0
@@ -299,13 +299,13 @@ function updateHabit(image){
                 title: ptitle,
                 icon: img,
                 weeklyfrequency: {
-                    sun: pweekly[0],
-                    mon: pweekly[1],
-                    tues: pweekly[2],
-                    wed: pweekly[3],
-                    thurs: pweekly[4],
-                    fri: pweekly[5],
-                    sat: pweekly[6]
+                    Sunday: pweekly[0],
+                    Monday: pweekly[1],
+                    Tuesday: pweekly[2],
+                    Wednesday: pweekly[3],
+                    Thursday: pweekly[4],
+                    Friday: pweekly[5],
+                    Saturday: pweekly[6]
                 },
                 dailyfrequency: pdaily
             });
@@ -317,13 +317,13 @@ function updateHabit(image){
             title: ptitle,
             icon: img,
             weeklyfrequency: {
-                sun: pweekly[0],
-                mon: pweekly[1],
-                tues: pweekly[2],
-                wed: pweekly[3],
-                thurs: pweekly[4],
-                fri: pweekly[5],
-                sat: pweekly[6]
+                Sunday: pweekly[0],
+                Monday: pweekly[1],
+                Tuesday: pweekly[2],
+                Wednesday: pweekly[3],
+                Thursday: pweekly[4],
+                Friday: pweekly[5],
+                Saturday: pweekly[6]
             },
             dailyfrequency: pdaily
         }
@@ -349,19 +349,3 @@ function getBase64Image(img) {
     }
 }
 
-function displayDate() {
-    var now = new Date();
-    var days = new Array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
-    var months = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
-    var date = ((now.getDate()<10) ? "0" : "")+ now.getDate();
-    function fourdigits(number) {
-        return (number < 1000) ? number + 1900 : number;
-    }
-    today =  days[now.getDay()] + ", " +
-         months[now.getMonth()] + " " +
-         date + ", " +
-         (fourdigits(now.getYear())) ;
-    //document.write(today);
-    //return days[now.getDay()];
-    return today;
-}
