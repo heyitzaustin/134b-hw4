@@ -29,6 +29,7 @@ function addHabit(image, day_freq){
     var onComplete = function(error) {
         if (error) {
             console.log('Synchronization failed');
+            sendRollbarError("Synchronization failed");
             document.getElementById('alert').innerHTML = '** error saving habit please try again **';
 
         } else {
@@ -165,6 +166,7 @@ function listHabits(){
         });
     }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
+        sendRollbarError("The read failed: " + errorObject.code);
     });
 
 
@@ -199,6 +201,7 @@ var habitsRef = myFirebaseRef.child("habits");
                             var onComplete = function(error) {
                                 if (error) {
                                     console.log('Synchronization failed');
+                                    sendRollbarError("Synchronization failed");
                                 } else {
                                     console.log('Synchronization succeeded');
                                 }
@@ -224,6 +227,7 @@ var habitsRef = myFirebaseRef.child("habits");
                     });
     }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
+        sendRollbarError("The read failed: " + errorObject.code)
     });
 }
 
@@ -241,6 +245,7 @@ function removeHabit(key){
     var onComplete = function(error) {
         if (error) {
             console.log('Synchronization failed');
+            sendRollbarError("Synchronization failed");
         } else {
             console.log('Synchronization succeeded');
             mixpanel.track("Habit Deleted");
@@ -293,6 +298,7 @@ function updateHabit(image){
     var onComplete = function(error) {
         if (error) {
             console.log('Synchronization failed');
+            sendRollbarError("Synchronization failed");
         } else {
             console.log('Synchronization succeeded');
             mixpanel.track("Habit Updated", {
