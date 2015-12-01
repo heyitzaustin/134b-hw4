@@ -33,6 +33,21 @@ function addHabit(image, day_freq){
 
         } else {
             console.log('Synchronization succeeded');
+            mixpanel.track("Habit Added", {
+                title: title,
+                icon: img,
+                weeklyfrequency: {
+                    sun: pweekly[0],
+                    mon: pweekly[1],
+                    tues: pweekly[2],
+                    wed: pweekly[3],
+                    thurs: pweekly[4],
+                    fri: pweekly[5],
+                    sat: pweekly[6]
+                },
+                dailyfrequency: day_freq,
+                progress: 0
+            });
             location.href="list.html";
         }
     };
@@ -106,6 +121,8 @@ function listHabits(){
     // TODO: retrieve habits and list them
 
     var element = document.getElementById("habit-list");
+
+    mixpanel.track("Habits Viewed");
 
     habitsRef.once("value", function(snapshot) {
         snapshot.forEach(function(childSnapshot){
@@ -226,6 +243,7 @@ function removeHabit(key){
             console.log('Synchronization failed');
         } else {
             console.log('Synchronization succeeded');
+            mixpanel.track("Habit Deleted");
         }
     };
     deleteRef.remove(onComplete);
@@ -277,6 +295,20 @@ function updateHabit(image){
             console.log('Synchronization failed');
         } else {
             console.log('Synchronization succeeded');
+            mixpanel.track("Habit Updated", {
+                title: ptitle,
+                icon: img,
+                weeklyfrequency: {
+                    sun: pweekly[0],
+                    mon: pweekly[1],
+                    tues: pweekly[2],
+                    wed: pweekly[3],
+                    thurs: pweekly[4],
+                    fri: pweekly[5],
+                    sat: pweekly[6]
+                },
+                dailyfrequency: pdaily
+            });
         }
     };
 

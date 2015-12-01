@@ -12,6 +12,9 @@ function onClickSignUp() {
   } else {
     console.log("Successfully created user account with uid:", userData.uid);
     var signUpText = document.getElementById("signInMessage");
+    mixpanel.track("User Registered", {
+      "email": document.getElementById('usermail').value
+    });
     signUpText.style.display = "block";
   }
 });
@@ -31,7 +34,11 @@ function onClickLogin(){
       signUpFailed.style.display = "block";
     } else {
       console.log("Authenticated successfully with payload:", authData);
+      mixpanel.track("User Login", {
+        "email": document.getElementById('usermail').value
+      });
       window.location.href = "welcome.html";
+
     }
   });
 
